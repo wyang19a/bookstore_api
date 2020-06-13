@@ -17,6 +17,8 @@ using System.Reflection;
 using System.IO;
 using BookStore_API.Contracts;
 using BookStore_API.Services;
+using AutoMapper;
+using BookStore_API.Mappings;
 
 namespace BookStore_API
 {
@@ -47,7 +49,8 @@ namespace BookStore_API
                                       .AllowAnyHeader());
             }); // now go down to Configure (line 78) 
 
-
+            //Adding AutoMapper
+            services.AddAutoMapper(typeof(Maps));
 
             // add swagger services added from nuget package manager
             services.AddSwaggerGen(c => { // lambda expression c, "token".
