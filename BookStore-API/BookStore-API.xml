@@ -4,6 +4,30 @@
         <name>BookStore-API</name>
     </assembly>
     <members>
+        <member name="T:BookStore_API.Controllers.AuthorsController">
+            <summary>
+            Endpoint used to interact with the Authors in the book store's database
+            </summary>
+        </member>
+        <member name="M:BookStore_API.Controllers.AuthorsController.GetAuthors">
+            <summary>
+            GET all authors
+            </summary>
+            <returns>List Of Authors</returns>
+        </member>
+        <member name="M:BookStore_API.Controllers.AuthorsController.GetAuthor(System.Int32)">
+            <summary>
+            GET one author
+            </summary>
+            /// <returns>One Author</returns>
+        </member>
+        <member name="M:BookStore_API.Controllers.AuthorsController.Create(BookStore_API.DTOs.AuthorCreateDTO)">
+            <summary>
+            CREATE
+            </summary>
+            <param name="authorDTO"></param>
+            <returns> CREATE Author </returns>
+        </member>
         <member name="T:BookStore_API.Controllers.HomeController">
             <summary>
             Controllerrrr
