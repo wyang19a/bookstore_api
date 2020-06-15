@@ -19,6 +19,9 @@ using BookStore_API.Contracts;
 using BookStore_API.Services;
 using AutoMapper;
 using BookStore_API.Mappings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BookStore_API
 {
@@ -35,11 +38,11 @@ namespace BookStore_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDefaultIdentity<IdentityUser>()
+                    .AddRoles<IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // ADD CORS, build policy
             services.AddCors(o => {
@@ -51,6 +54,21 @@ namespace BookStore_API
 
             //Adding AutoMapper
             services.AddAutoMapper(typeof(Maps));
+
+            // Adding jwt bearer token, configure it.
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(o => {
+                        o.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = Configuration["Jwt:Issuer"],
+                            ValidAudience = Configuration["Jwt:Issuer"],
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        };
+                    });
 
             // add swagger services added from nuget package manager
             services.AddSwaggerGen(c => { // lambda expression c, "token".
@@ -81,7 +99,12 @@ namespace BookStore_API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, 
+            IWebHostEnvironment env, 
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             if (env.IsDevelopment())
             {
@@ -109,6 +132,9 @@ namespace BookStore_API
 
             //USE CORS
             app.UseCors("CorsPolicy"); //Ready for global interaction.
+
+            // Seed Data
+            SeedData.Seed(userManager, roleManager).Wait(); // using .Wait because if I use await, need to make configure async, will mess up things.
 
             app.UseRouting();
 
