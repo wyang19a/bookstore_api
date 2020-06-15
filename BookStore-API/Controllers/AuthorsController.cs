@@ -97,7 +97,7 @@ namespace BookStore_API.Controllers
         /// <summary>
         /// CREATE
         /// </summary>
-        /// <param name="authorDTO"></param>
+        /// <param name="author"></param>
         /// <returns> CREATE Author </returns>
         
         [HttpPost]
@@ -128,6 +128,94 @@ namespace BookStore_API.Controllers
                 }
                 _logger.LogInfo("Author Created");
                 return Created("Create", new { author });
+            }
+            catch (Exception e)
+            {
+                return InternalError($"{e.Message} - {e.InnerException}");
+            }
+        }
+
+        /// <summary>
+        /// Update 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="authorDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Update(int id, [FromBody] AuthorUpdateDTO authorDTO) // Create and Update often share the same DTO function. some devs call it Upsert (Update + insert)
+                                                                                              // in case you need to implement logic such as you only allow `bio` field update, but not `firstname`, and `lastname`
+                                                                                              // you will need to define new DTO function for that.
+                                                                                              // after attempt, we decide we need new DTO just for update because Id is needed for update.
+        {
+            try
+            {
+                _logger.LogInfo($"Author Update Attempted - id: {id}");
+                if (id < 1 || authorDTO == null || id != authorDTO.Id)
+                {
+                    _logger.LogWarn("Author Update failed with bad data");
+                    return BadRequest();
+                }
+                var isExists = await _authorRepository.isExist(id);
+                if (!isExists)
+                {
+                    _logger.LogWarn($"Author with id: {id} was not found");
+                    return NotFound();
+                }
+                if(!ModelState.IsValid)
+                {
+                    _logger.LogWarn($"Author Update was incomplete");
+                    return BadRequest(ModelState);
+                }
+                var author = _mapper.Map<Author>(authorDTO);
+                var isSuccess = await _authorRepository.Update(author);
+                if (!isSuccess)
+                {
+                    return InternalError($"Update failed");
+                }
+                _logger.LogInfo($"Author with id: {id} successfully updated.");
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return InternalError($"{e.Message} - {e.InnerException}");
+            }
+        }
+
+        /// <summary>
+        /// Remove Author
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            _logger.LogInfo($"Author delete attempted");
+            try
+            {
+                if (id < 1)
+                {
+                    _logger.LogError($"Author with id is less than 1");
+                    return BadRequest();
+                }
+                var isExists = await _authorRepository.isExist(id);
+                if (!isExists)
+                {
+                    _logger.LogWarn($"Author with id: {id} was not found");
+                    return NotFound();
+                }
+                var author = await _authorRepository.FindById(id);
+                var isSuccess = await _authorRepository.Delete(author);
+                if (!isSuccess)
+                {
+                    return InternalError($"Delete Failed");
+                }
+                return NoContent();
             }
             catch (Exception e)
             {

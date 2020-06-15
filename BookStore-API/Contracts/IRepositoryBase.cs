@@ -9,6 +9,7 @@ namespace BookStore_API.Contracts
     {   // Task is needed for asynchronous function
         Task<IList<T>> FindAll();//Task<FORM OF DATA BEING RETURNED> Find All.
         Task<T> FindById(int id);
+        Task<bool> isExist(int id);
         Task<bool> Create(T entity);
         Task<bool> Update(T entity);
         Task<bool> Delete(T entity);
