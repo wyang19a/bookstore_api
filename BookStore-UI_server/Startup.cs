@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BookStore_UI_server.Data;
+using BookStore_UI_server.Contracts;
+using BookStore_UI_server.Service;
 
 namespace BookStore_UI_server
 {
@@ -28,7 +23,8 @@ namespace BookStore_UI_server
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddHttpClient();
+            services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

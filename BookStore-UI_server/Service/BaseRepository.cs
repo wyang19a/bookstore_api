@@ -21,7 +21,7 @@ namespace BookStore_UI_server.Service
             var request = new HttpRequestMessage(HttpMethod.Post, url);
             if (obj == null)
             {
-                return false;
+                return true;
             }
             request.Content = new StringContent(JsonConvert.SerializeObject(obj));
 
