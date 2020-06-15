@@ -72,8 +72,10 @@ namespace BookStore_API
 
             // initialize NLog
             services.AddSingleton<ILoggerService, LoggerService>();
-
+            // Iauthorrepo too
             services.AddScoped<IAuthorRepository, AuthorRepository>();
+            // and the ibookrepo as well
+            services.AddScoped<IBookRepository, BookRepository>();
             //services.AddRazorPages();
             services.AddControllers(); // leave it for last because everything else should be ready before adding controllers `ideally`
         }
