@@ -52,21 +52,21 @@
             <summary>
             Get All Books
             </summary>
-            <returns></returns>
+            <returns>A List of Books</returns>
         </member>
         <member name="M:BookStore_API.Controllers.BooksController.GetBook(System.Int32)">
             <summary>
-            Get one Book
+            Get One Book
             </summary>
             <param name="id"></param>
-            <returns></returns>
+            <returns>A Book Record</returns>
         </member>
         <member name="M:BookStore_API.Controllers.BooksController.Create(BookStore_API.DTOs.BookCreateDTO)">
             <summary>
             Create Book
             </summary>
             <param name="bookDTO"></param>
-            <returns></returns>
+            <returns>Create Book Object</returns>
         </member>
         <member name="M:BookStore_API.Controllers.BooksController.Update(System.Int32,BookStore_API.DTOs.BookUpdateDTO)">
             <summary>

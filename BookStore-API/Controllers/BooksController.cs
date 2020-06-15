@@ -39,8 +39,10 @@ namespace BookStore_API.Controllers
         /// <summary>
         /// Get All Books
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A List of Books</returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBooks()
         {
             var location = GetControllerActionNames();
@@ -50,7 +52,7 @@ namespace BookStore_API.Controllers
                 var books = await _bookRepository.FindAll();
                 var response = _mapper.Map<IList<BookDTO>>(books);
                 _logger.LogInfo($"{location}: Successful");
-                return Ok();
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -59,11 +61,11 @@ namespace BookStore_API.Controllers
         }
 
         /// <summary>
-        /// Get one Book
+        /// Get One Book
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("{id}")]
+        /// <returns>A Book Record</returns>
+        [HttpGet("{id}")] // can be [HttpGet("{id:int}") to specify the type of param.
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -73,15 +75,15 @@ namespace BookStore_API.Controllers
             var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo($"{location}: Attempted Call");
+                _logger.LogInfo($"{location}: Attempted Call for ID: {id}");
                 var book = await _bookRepository.FindById(id);
                 if (book == null)
                 {
-                    _logger.LogInfo($"{location}: ID #{id} not found");
+                    _logger.LogWarn($"{location}: Failed to retrieve record with ID: {id}");
                     return NotFound();
                 }
                 var response = _mapper.Map<BookDTO>(book);
-                _logger.LogInfo($"{location}: Successful");
+                _logger.LogInfo($"{location}: Successfully got record with ID {id}");
                 return Ok(response);
             }
             catch (Exception e)
@@ -94,7 +96,7 @@ namespace BookStore_API.Controllers
         /// Create Book
         /// </summary>
         /// <param name="bookDTO"></param>
-        /// <returns></returns>
+        /// <returns>Create Book Object</returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -104,24 +106,24 @@ namespace BookStore_API.Controllers
             var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo($"{location}: Attempted to post");
+                _logger.LogInfo($"{location}: Attempted POST");
                 if (bookDTO == null)
                 {
-                    _logger.LogWarn($"{location}: empty request submitted");
+                    _logger.LogWarn($"{location}: Empty request submitted");
                     return BadRequest(ModelState);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogWarn($"{location}: Incomplete data");
+                    _logger.LogWarn($"{location}: Incomplete Data");
                     return BadRequest(ModelState);
                 }
                 var book = _mapper.Map<Book>(bookDTO);
                 var isSuccess = await _bookRepository.Create(book);
                 if(!isSuccess)
                 {
-                    return InternalError($"{location}: submission failed");
+                    return InternalError($"{location}: POST Fail");
                 }
-                _logger.LogInfo($"{location}: Success");
+                _logger.LogInfo($"{location}: POST Success");
                 return Created("Create", new { book });
             }
             catch (Exception e)

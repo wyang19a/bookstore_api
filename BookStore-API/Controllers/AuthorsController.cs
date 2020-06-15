@@ -46,19 +46,20 @@ namespace BookStore_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAuthors() // GetAuthors() is just assigned here.
         {
+            var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo("Attempted Get All Authors. Custom message can use interpolations(dollar,curly braces) too");
+                _logger.LogInfo($"{location}: Attempted Call");
                 var authors = await _authorRepository.FindAll();
                 var response = _mapper.Map<List<AuthorDTO>>(authors);//DTO is like a serializer in RoR. control what is shown.
-                _logger.LogInfo("Successfully got all Authors! Custom message");
+                _logger.LogInfo($"{location}: Successful");
                 return Ok(response); // return 200 OK and send in the mapped data.\
             }
             catch (Exception e)
             {
                 //_logger.LogError($"{e.Message} - {e.InnerException}");
                 //return StatusCode(500, "Something went wrong. Please contact the Admin. Custom message");
-                return InternalError($"{e.Message} - {e.InnerException}");
+                return InternalError($"{location}: {e.Message} - {e.InnerException}");
             }
         }
 
@@ -72,17 +73,18 @@ namespace BookStore_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAuthor(int id)
         {
+            var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo($"Attempted Get Author id: {id} ");
+                _logger.LogInfo($"{location}: Attempted Call for ID: {id}");
                 var author = await _authorRepository.FindById(id);
                 if (author == null)
                 {
-                    _logger.LogWarn($"Author id: {id} was not found.");
+                    _logger.LogWarn($"{location}: Failed to retrieve record with ID: {id}");
                     return NotFound();
                 }
                 var response = _mapper.Map<AuthorDTO>(author);
-                _logger.LogInfo("Successfully got the author");
+                _logger.LogInfo($"{location}: Successfully got record with ID {id}");
                 return Ok(response);
             }
             catch (Exception e)
@@ -90,7 +92,7 @@ namespace BookStore_API.Controllers
                 //_logger.LogError($"{e.Message} - {e.InnerException}");
                 //return StatusCode(500, "Something went wrong. Please contact the Admin. Custom message");
                 // above two lines of code is becoming repetitive. so I'm just gonna make a  private method that will do the same, call
-                return InternalError($"{e.Message} - {e.InnerException}");
+                return InternalError($"{location}: {e.Message} - {e.InnerException}");
             }
         }
 
@@ -107,26 +109,27 @@ namespace BookStore_API.Controllers
         public async Task<IActionResult> Create([FromBody] AuthorCreateDTO authorDTO) // expecting some kind of [Body] from client. Id, First name, Last name, Bio, List of books.
                                                                             // now go look at the AuthorDTO.cs, where we defined AuthorCreateDTO
         {
+            var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo($"Author submission attempted");
+                _logger.LogInfo($"{location}: Attempted POST");
                 if (authorDTO == null)
                 {
-                    _logger.LogWarn($"Empty Request was submitted");
+                    _logger.LogWarn($"{location}: Empty request submitted");
                     return BadRequest(ModelState);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogWarn($"Author data was incomplete");
+                    _logger.LogWarn($"{location}: Incomplete Data");
                     return BadRequest(ModelState);
                 }
                 var author = _mapper.Map<Author>(authorDTO);
                 var isSuccess = await _authorRepository.Create(author);
                 if (!isSuccess)
                 {
-                    return InternalError($"Author Creation Failed");
+                    return InternalError($"{location}: POST Fail");
                 }
-                _logger.LogInfo("Author Created");
+                _logger.LogInfo($"{location}: POST Success");
                 return Created("Create", new { author });
             }
             catch (Exception e)
@@ -150,9 +153,10 @@ namespace BookStore_API.Controllers
                                                                                               // you will need to define new DTO function for that.
                                                                                               // after attempt, we decide we need new DTO just for update because Id is needed for update.
         {
+            var location = GetControllerActionNames();
             try
             {
-                _logger.LogInfo($"Author Update Attempted - id: {id}");
+                _logger.LogInfo($"{location}: Attempted POST");
                 if (id < 1 || authorDTO == null || id != authorDTO.Id)
                 {
                     _logger.LogWarn("Author Update failed with bad data");
@@ -223,6 +227,13 @@ namespace BookStore_API.Controllers
             }
         }
 
+        private string GetControllerActionNames()
+        {
+            var controller = ControllerContext.ActionDescriptor.ControllerName;
+            var action = ControllerContext.ActionDescriptor.ActionName;
+
+            return $"{controller} - {action}";
+        }
         private ObjectResult InternalError(string message)
         {
             _logger.LogError(message);
