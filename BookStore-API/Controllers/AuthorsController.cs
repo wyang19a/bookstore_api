@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 
+///////////////////////////////////REMEMBER Doing update-database on Nuget Console to scaffold seed data
+
 namespace BookStore_API.Controllers
 {
     /// <summary>
@@ -18,6 +20,7 @@ namespace BookStore_API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Same as saying [Authorize(Roles = "Customers, Administrator")] because we only have 2 roles.
     [ProducesResponseType(StatusCodes.Status200OK)]
     public class AuthorsController : ControllerBase
     {
@@ -43,7 +46,6 @@ namespace BookStore_API.Controllers
         /// </summary>
         /// <returns>List Of Authors</returns>
         [HttpGet]
-        [AllowAnonymous] // Anybody can get authors
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAuthors() // GetAuthors() is just assigned here.
@@ -70,7 +72,7 @@ namespace BookStore_API.Controllers
         /// </summary>
         /// /// <returns>One Author</returns>
         [HttpGet("{id}")]
-        [AllowAnonymous] // Anyone can get author
+        [Authorize(Roles = "Customers, Administrator")] // [AllowAnonymous] => Anyone can get author
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -149,7 +151,7 @@ namespace BookStore_API.Controllers
         /// <param name="authorDTO"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrator, Customer")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -199,7 +201,7 @@ namespace BookStore_API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
