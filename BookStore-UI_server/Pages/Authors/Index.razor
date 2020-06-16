@@ -4,9 +4,7 @@
 <h3>Index</h3>
 @if (Model == null)
 {
-    <div class="alert alert-dismissible alert-secondary">
-        Loading Data...
-    </div>
+<LoadingMessage Message="Loading Author Data..."></LoadingMessage>
 }
 else
 {
@@ -28,10 +26,10 @@ else
                         <a href="/authors/view/@author.Id" class="btn btn-primary">
                             <span class="oi oi-book"></span> View
                         </a>
-                        <a href="/authors/delete" class="btn btn-warning">
+                        <a href="/authors/edit/@author.Id" class="btn btn-warning">
                             <span class="oi oi-pencil"></span> Edit
                         </a>
-                        <a class="btn btn-danger">
+                        <a href="/authors/delete"class="btn btn-danger">
                             <span class="oi oi-delete"></span> Delete
                         </a>
                     </td>

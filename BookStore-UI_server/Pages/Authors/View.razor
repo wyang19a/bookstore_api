@@ -1,19 +1,16 @@
 ﻿@page "/authors/view/{Id}"
 @inject IAuthorRepository _repo
 @inject NavigationManager _navManager
-<h3>View</h3>
+<h3>View Author Details</h3>
 
 @if (Model == null)
 {
-    <div class="alert alert-dismissible alert-secondary">
-        Loading Data...
-    </div>
+<LoadingMessage Message="Loading Author Details..."></LoadingMessage>
 }
 else
 {
 
 <div class="col-md-4">
-    <h4>Author Details</h4>
     <table class="table table-responsive">
         <tr>
             <td>First Name</td>
