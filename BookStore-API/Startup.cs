@@ -95,7 +95,10 @@ namespace BookStore_API
             // and the ibookrepo as well
             services.AddScoped<IBookRepository, BookRepository>();
             //services.AddRazorPages();
-            services.AddControllers(); // leave it for last because everything else should be ready before adding controllers `ideally`
+            services.AddControllers().AddNewtonsoftJson(op => {
+                op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                }); 
+            // leave it for last because everything else should be ready before adding controllers `ideally`
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
