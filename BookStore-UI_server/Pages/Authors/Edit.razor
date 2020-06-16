@@ -5,9 +5,7 @@
 <h3>Edit Author</h3>
 @if (isFailed)
 {
-    <div class="alert alert-danger">
-        <p>Something went wrong with the edit attempt</p>
-    </div>
+    <ErrorMessage Message="Something went wrong with the edit attempt" />
 }
 @if (Model == null)
 {
