@@ -25,7 +25,7 @@
             <summary>
             CREATE
             </summary>
-            <param name="author"></param>
+            <param name="authorDTO"></param>
             <returns> CREATE Author </returns>
         </member>
         <member name="M:BookStore_API.Controllers.AuthorsController.Update(System.Int32,BookStore_API.DTOs.AuthorUpdateDTO)">

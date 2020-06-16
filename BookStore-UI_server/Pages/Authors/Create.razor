@@ -1,24 +1,17 @@
-﻿@page "/authors/edit/{Id}"
+﻿@page "/authors/create/"
 @attribute [Authorize(Roles = "Administrator")]
-
 @inject IAuthorRepository _repo
 @inject NavigationManager _navManager
 
-<h3 class="card-title">Edit Author</h3>
+<h3 class="card-title">Create Author</h3>
+<hr/>
 @if (!isSuccess)
 {
-    <ErrorMessage Message="Something went wrong with the edit attempt" />
+    <ErrorMessage Message="Something went wrong with the create attempt" />
 }
-@if (Model == null)
-{
-    @*<div class="alert alert-dismissible alert-secondary">
-        Loading Data...
-    </div>*@
-    <LoadingMessage Message="Loading Author Edit..."></LoadingMessage>
-}
-else
-{
-<EditForm Model="Model" OnValidSubmit="EditAuthor">
+
+
+<EditForm Model="Model" OnValidSubmit="CreateAuthor">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
@@ -33,30 +26,24 @@ else
         <label for="bio">Biography</label>
         <InputTextArea id="bio" @bind-Value="Model.Bio" class="form-control" />
     </div>
-    <button type="submit" class="btn btn-primary"><span class="oi oi-pencil"></span>Submit</button>
+    <button type="submit" class="btn btn-primary">
+        <span class="oi oi-pencil"></span>
+        Submit
+    </button>
     <button @onclick="BackToList" class="btn btn-outline-secondary">
         <span class="oi oi-media-skip-backward"></span>
-     Back To List
+        Back To List
     </button>
 </EditForm>
-}
+
 
 @code {
-    [Parameter]
-    public string Id { get; set; }
-
     private Author Model = new Author();
     private bool isSuccess = true;
-    protected override async Task OnInitializedAsync()
+    private async Task CreateAuthor()
     {
-        int id = Convert.ToInt32(Id);
-        Model = await _repo.Get(Endpoints.AuthorsEndpoint, id);
-    }
-
-    private async Task EditAuthor()
-    {
-        bool isSuccess = await _repo.Update(Endpoints.AuthorsEndpoint, Model, Model.Id);
-        if(isSuccess)
+        isSuccess = await _repo.Create(Endpoints.AuthorsEndpoint, Model);
+        if (isSuccess)
         {
             BackToList();
         }

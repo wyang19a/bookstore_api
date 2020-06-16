@@ -104,7 +104,7 @@ namespace BookStore_API.Controllers
         /// <summary>
         /// CREATE
         /// </summary>
-        /// <param name="author"></param>
+        /// <param name="authorDTO"></param>
         /// <returns> CREATE Author </returns>
         
         [HttpPost]
