@@ -24,5 +24,12 @@ namespace BookStore_UI_server.Models
     }
     public class LoginModel
     {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email Address")]
+        public string EmailAddress { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
     }
 }

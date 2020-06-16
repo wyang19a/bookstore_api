@@ -9,7 +9,7 @@
 
     <div class="card">
         <h3 class="card-title">Register Now</h3>
-        @if (isFailed)
+        @if (!response)
         {
             <div class="alert alert-danger">
                 <p>Something went wrong with the registration attempt</p>
@@ -42,8 +42,8 @@
 
 @code {
     private RegistrationModel Model = new RegistrationModel();
-    
-    bool isFailed = false;
+
+    private bool response = true;
 
     private async Task HandleRegistration()
     {
@@ -51,11 +51,7 @@
 
         if (response)
         {
-            _navManager.NavigateTo("/");
-        }
-        else
-        {
-            isFailed = true;
+            _navManager.NavigateTo("/login");
         }
     }
 }

@@ -5,6 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BookStore_UI_server.Contracts;
 using BookStore_UI_server.Service;
+using Blazored.LocalStorage;
+using System.IdentityModel.Tokens.Jwt;
+using BookStore_UI_server.Providers;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BookStore_UI_server
 {
@@ -23,7 +27,12 @@ namespace BookStore_UI_server
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            // Add BlazoredLocalStorage
+            services.AddBlazoredLocalStorage();
             services.AddHttpClient();
+            services.AddScoped<ApiAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(p => p.GetRequiredService<ApiAuthenticationStateProvider>());
+            services.AddScoped<JwtSecurityTokenHandler>();
             services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
         }
 
